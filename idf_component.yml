@@ -1,0 +1,8 @@
+dependencies:
+  idf: ">=5.0"
+
+  lvgl/lvgl: "^8.3.9"
+
+  lovyangfx:
+    git: "https://github.com/lovyan03/LovyanGFX.git"
+    version: "1.2.21"
