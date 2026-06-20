@@ -22,10 +22,11 @@ private:
 
 private:
   IDisplayDriver& m_hardwareDriver;
-  void*           m_buffer1 = nullptr;
-  void*           m_buffer2 = nullptr;
-  lv_display_t*   m_lvglDisplay = nullptr;
 
+  void* m_buffer1 = nullptr;
+  void* m_buffer2 = nullptr;
+
+  lv_display_t*     m_lvglDisplay = nullptr;
   SemaphoreHandle_t m_dmaSemaphore = nullptr;
 };
 

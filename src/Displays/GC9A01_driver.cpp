@@ -44,8 +44,8 @@ void GC9A01Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
   ESP_ERROR_CHECK(spi_bus_initialize(m_configuration.spiHost, &busConfig, SPI_DMA_CH_AUTO));
 
   esp_lcd_panel_io_spi_config_t ioConfig = {};
-  ioConfig.dc_gpio_num = static_cast<gpio_num_t>(m_configuration.pinDataCommand);
-  ioConfig.cs_gpio_num = static_cast<gpio_num_t>(m_configuration.spiPinChipSelect);
+  ioConfig.dc_gpio_num = m_configuration.pinDataCommand;
+  ioConfig.cs_gpio_num = m_configuration.spiPinChipSelect;
   ioConfig.pclk_hz = m_configuration.spiFrequencyWrite;
   ioConfig.lcd_cmd_bits = 8;
   ioConfig.lcd_param_bits = 8;
@@ -77,7 +77,7 @@ void GC9A01Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
   };
 
   esp_lcd_panel_dev_config_t panel_config = {};
-  panel_config.reset_gpio_num = static_cast<gpio_num_t>(m_configuration.pinReset);
+  panel_config.reset_gpio_num = m_configuration.pinReset;
   panel_config.rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR;
   panel_config.bits_per_pixel = 16;
   panel_config.vendor_config = &vendor_config;

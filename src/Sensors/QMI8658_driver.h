@@ -14,7 +14,7 @@ public:
 
   bool init(i2c_master_bus_handle_t bus_handle);
 
-  virtual bool getValues(float& x, float& y, float& z) override;
+  bool getValues(float& x, float& y, float& z) override;
 
 private:
   bool writeRegister(uint8_t reg, uint8_t value);
