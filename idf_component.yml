@@ -1,8 +1,5 @@
 dependencies:
   idf: ">=5.0"
 
-  lvgl/lvgl: "^8.3.9"
-
-  lovyangfx:
-    git: "https://github.com/lovyan03/LovyanGFX.git"
-    version: "1.2.21"
+  lvgl/lvgl: "^9.5.0"
+  espressif/esp_lcd_gc9a01: "^2.0.4"

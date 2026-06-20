@@ -13,7 +13,7 @@ idf_component_register(
            "src/Graphics"
            "src/Sensors"
   INCLUDE_DIRS "src"
-  REQUIRES lvgl lovyangfx
+  REQUIRES lvgl esp_lcd_gc9a01
 )
 
 target_compile_options(${COMPONENT_LIB} PRIVATE ${COMPILER_FLAGS})
