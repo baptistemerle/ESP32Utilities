@@ -2,9 +2,10 @@
 
 #include "Interfaces/idisplay_driver.h"
 
-DisplayEngine::DisplayEngine(IDisplayDriver& hardwareDriver, uint16_t bufferHeightRatio)
+#include "esp_heap_caps.h"
+
+DisplayEngine::DisplayEngine(IDisplayDriver& hardwareDriver)
   : m_hardwareDriver(hardwareDriver)
-  , m_pixelCount(hardwareDriver.width() * (hardwareDriver.height() / bufferHeightRatio))
 {
 }
 
@@ -12,40 +13,100 @@ DisplayEngine::~DisplayEngine()
 {
   if (m_lvglDisplay)
   {
-    lv_disp_remove(m_lvglDisplay);
+    lv_display_delete(m_lvglDisplay);
   }
 
-  if (m_buffer)
+  if (m_buffer1)
   {
-    delete[] m_buffer;
-    m_buffer = nullptr;
+    heap_caps_free(m_buffer1);
+  }
+
+  if (m_buffer2)
+  {
+    heap_caps_free(m_buffer2);
   }
 }
 
-lv_disp_t* DisplayEngine::init()
+lv_display_t* DisplayEngine::init()
 {
-  m_hardwareDriver.init();
+  m_dmaSemaphore = xSemaphoreCreateBinary();
+  if (!m_dmaSemaphore)
+    return nullptr;
 
-  m_buffer = new lv_color_t[m_pixelCount];
-  lv_disp_draw_buf_init(&m_drawBuffer, m_buffer, nullptr, m_pixelCount);
+  xSemaphoreGive(m_dmaSemaphore);
 
-  lv_disp_drv_init(&m_lvglDriver);
+  m_lvglDisplay = lv_display_create(m_hardwareDriver.width(), m_hardwareDriver.height());
+  if (!m_lvglDisplay)
+    return nullptr;
 
-  m_lvglDriver.hor_res =    m_hardwareDriver.width();
-  m_lvglDriver.ver_res =    m_hardwareDriver.height();
-  m_lvglDriver.flush_cb =  &DisplayEngine::flush;
-  m_lvglDriver.draw_buf =  &m_drawBuffer;
-  m_lvglDriver.user_data =  this;
+  lv_display_set_user_data(m_lvglDisplay, this);
+  lv_display_set_flush_cb(m_lvglDisplay, &DisplayEngine::flushCallback);
 
-  m_lvglDisplay = lv_disp_drv_register(&m_lvglDriver);
+  if (m_hardwareDriver.preferredRenderMode() == DisplayRenderMode::Partial)
+  {
+    uint32_t bufferSize = m_hardwareDriver.width() * (m_hardwareDriver.height() / 10) * sizeof(uint16_t);
+
+    m_buffer1 = heap_caps_malloc(bufferSize, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
+    m_buffer2 = heap_caps_malloc(bufferSize, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
+
+    lv_display_set_buffers(m_lvglDisplay, m_buffer1, m_buffer2, bufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
+  }
+  else
+  {
+    void* fb1 = m_hardwareDriver.getFramebuffer(0);
+    void* fb2 = m_hardwareDriver.getFramebuffer(1);
+    uint32_t fbSize = m_hardwareDriver.width() * m_hardwareDriver.height() * sizeof(uint16_t);
+
+    lv_display_set_buffers(m_lvglDisplay, fb1, fb2, fbSize, LV_DISPLAY_RENDER_MODE_DIRECT);
+  }
+
+  m_hardwareDriver.init(&DisplayEngine::onDriverTXDone, this);
+
   return m_lvglDisplay;
 }
 
-void DisplayEngine::flush(lv_disp_drv_t* display, const lv_area_t* area, lv_color_t* colorData)
+void DisplayEngine::flushCallback(lv_display_t* display, const lv_area_t* area, uint8_t* colorData)
 {
-  DisplayEngine* instance = static_cast<DisplayEngine*>(display->user_data);
+  DisplayEngine* instance = static_cast<DisplayEngine*>(lv_display_get_user_data(display));
 
-  instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
+  if (instance->m_hardwareDriver.preferredRenderMode() == DisplayRenderMode::Partial)
+  {
+    xSemaphoreTake(instance->m_dmaSemaphore, portMAX_DELAY);
 
-  lv_disp_flush_ready(display);
+    if (instance->m_hardwareDriver.requiresByteSwap())
+    {
+      uint32_t pixel_count = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1);
+      lv_draw_sw_rgb565_swap(colorData, pixel_count);
+    }
+
+    instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
+
+    lv_display_flush_ready(display);
+  }
+  else
+  {
+    instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
+    lv_display_flush_ready(display);
+  }
+}
+
+/**
+ * @brief Callback triggered when the hardware driver finishes sending pixels via DMA.
+ * @note This function executes inside the Hardware ISR context.
+ * It must remain ultra-fast and only set an atomic/volatile flag to defer processing to the main task.
+ */
+void DisplayEngine::onDriverTXDone(void* arg)
+{
+  auto* instance = static_cast<DisplayEngine*>(arg);
+  if (instance && instance->m_dmaSemaphore)
+  {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    xSemaphoreGiveFromISR(instance->m_dmaSemaphore, &xHigherPriorityTaskWoken);
+
+    if (xHigherPriorityTaskWoken)
+    {
+      portYIELD_FROM_ISR();
+    }
+  }
 }

@@ -9,12 +9,12 @@ template <typename T>
 class SingleObservable : public IObservable<T>
 {
 public:
-  virtual void attachListener(T* observer) override
+  void attachListener(T* observer) override
   {
     m_observer = observer;
   }
 
-  virtual void detachListener(T* observer) override
+  void detachListener(T* observer) override
   {
     if (m_observer != observer)
       return;

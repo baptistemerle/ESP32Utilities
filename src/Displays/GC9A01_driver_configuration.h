@@ -2,16 +2,17 @@
 #define GC9A01_DRIVER_CONFIGURATION_H
 
 #include <driver/spi_common.h>
+#include <soc/gpio_num.h>
 
 struct GC9A01Driver_Configuration
 {
   spi_host_device_t spiHost;
   uint32_t          spiFrequencyWrite;
-  int16_t           spiPinClock;
-  int16_t           spiPinMOSI;
-  int16_t           spiPinChipSelect;
-  int16_t           pinReset;
-  int16_t           pinDataCommand;
+  gpio_num_t        spiPinClock;
+  gpio_num_t        spiPinMOSI;
+  gpio_num_t        spiPinChipSelect;
+  gpio_num_t        pinReset;
+  gpio_num_t        pinDataCommand;
   uint16_t          screenWidth;
   uint16_t          screenHeight;
 };
