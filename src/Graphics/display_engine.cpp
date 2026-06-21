@@ -35,9 +35,20 @@ lv_display_t* DisplayEngine::init()
 
   xSemaphoreGive(m_dmaSemaphore);
 
+  m_hardwareDriver.init(&DisplayEngine::onDriverTXDone, this);
+
   m_lvglDisplay = lv_display_create(m_hardwareDriver.width(), m_hardwareDriver.height());
   if (!m_lvglDisplay)
     return nullptr;
+
+  if (m_hardwareDriver.requiresByteSwap())
+  {
+    lv_display_set_color_format(m_lvglDisplay, LV_COLOR_FORMAT_RGB565_SWAPPED);
+  }
+  else
+  {
+    lv_display_set_color_format(m_lvglDisplay, LV_COLOR_FORMAT_RGB565);
+  }
 
   lv_display_set_user_data(m_lvglDisplay, this);
   lv_display_set_flush_cb(m_lvglDisplay, &DisplayEngine::flushCallback);
@@ -60,8 +71,6 @@ lv_display_t* DisplayEngine::init()
     lv_display_set_buffers(m_lvglDisplay, fb1, fb2, fbSize, LV_DISPLAY_RENDER_MODE_DIRECT);
   }
 
-  m_hardwareDriver.init(&DisplayEngine::onDriverTXDone, this);
-
   return m_lvglDisplay;
 }
 
@@ -69,25 +78,11 @@ void DisplayEngine::flushCallback(lv_display_t* display, const lv_area_t* area, 
 {
   DisplayEngine* instance = static_cast<DisplayEngine*>(lv_display_get_user_data(display));
 
-  if (instance->m_hardwareDriver.preferredRenderMode() == DisplayRenderMode::Partial)
-  {
-    xSemaphoreTake(instance->m_dmaSemaphore, portMAX_DELAY);
+  xSemaphoreTake(instance->m_dmaSemaphore, portMAX_DELAY);
 
-    if (instance->m_hardwareDriver.requiresByteSwap())
-    {
-      uint32_t pixel_count = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1);
-      lv_draw_sw_rgb565_swap(colorData, pixel_count);
-    }
+  instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
 
-    instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
-
-    lv_display_flush_ready(display);
-  }
-  else
-  {
-    instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
-    lv_display_flush_ready(display);
-  }
+  lv_display_flush_ready(display);
 }
 
 /**
