@@ -95,12 +95,12 @@ void GC9A01Driver::flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2, const v
   esp_lcd_panel_draw_bitmap(m_panelHandle, x1, y1, x2 + 1, y2 + 1, rawData);
 }
 
-int GC9A01Driver::width() const
+uint32_t GC9A01Driver::width() const
 {
   return m_configuration.screenWidth;
 }
 
-int GC9A01Driver::height() const
+uint32_t GC9A01Driver::height() const
 {
   return m_configuration.screenHeight;
 }

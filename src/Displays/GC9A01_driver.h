@@ -16,8 +16,8 @@ public:
   void init(DisplayTxDoneCallback callback, void* callbackArg) override;
   void flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2, const void* rawData) override;
 
-  int width() const override;
-  int height() const override;
+  uint32_t width() const override;
+  uint32_t height() const override;
   DisplayRenderMode preferredRenderMode() const override;
   bool requiresByteSwap() const override;
 

@@ -64,8 +64,8 @@ lv_display_t* DisplayEngine::init()
   }
   else
   {
-    void* fb1 = m_hardwareDriver.getFramebuffer(0);
-    void* fb2 = m_hardwareDriver.getFramebuffer(1);
+    void* fb1 = m_hardwareDriver.getFrameBuffer(0);
+    void* fb2 = m_hardwareDriver.getFrameBuffer(1);
     uint32_t fbSize = m_hardwareDriver.width() * m_hardwareDriver.height() * sizeof(uint16_t);
 
     lv_display_set_buffers(m_lvglDisplay, fb1, fb2, fbSize, LV_DISPLAY_RENDER_MODE_DIRECT);

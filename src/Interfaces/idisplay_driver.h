@@ -20,13 +20,13 @@ public:
 
   virtual void flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2, const void* rawData) = 0;
 
-  virtual int width() const = 0;
-  virtual int height() const = 0;
+  virtual uint32_t width() const = 0;
+  virtual uint32_t height() const = 0;
   virtual DisplayRenderMode preferredRenderMode() const = 0;
 
   virtual bool requiresByteSwap() const { return false; }
 
-  virtual void* getFramebuffer(int index) const { return nullptr; }
+  virtual void* getFrameBuffer(uint8_t index) const { return nullptr; }
 };
 
 #endif // IDISPLAY_DRIVER_H
