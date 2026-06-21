@@ -33,16 +33,6 @@ void GC9A01Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
   m_txDoneCallback = callback;
   m_txDoneArg = callbackArg;
 
-  spi_bus_config_t busConfig = {};
-  busConfig.sclk_io_num = m_configuration.spiPinClock;
-  busConfig.mosi_io_num = m_configuration.spiPinMOSI;
-  busConfig.miso_io_num = -1;
-  busConfig.quadwp_io_num = -1;
-  busConfig.quadhd_io_num = -1;
-  busConfig.max_transfer_sz = m_configuration.screenWidth * 40 * sizeof(uint16_t);
-
-  ESP_ERROR_CHECK(spi_bus_initialize(m_configuration.spiHost, &busConfig, SPI_DMA_CH_AUTO));
-
   esp_lcd_panel_io_spi_config_t ioConfig = {};
   ioConfig.dc_gpio_num = m_configuration.pinDataCommand;
   ioConfig.cs_gpio_num = m_configuration.spiPinChipSelect;
