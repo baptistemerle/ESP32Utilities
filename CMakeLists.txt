@@ -10,6 +10,7 @@ set(COMPILER_FLAGS
 
 idf_component_register(
   SRC_DIRS "src/Displays"
+           "src/Expanders"
            "src/Graphics"
            "src/Sensors"
   INCLUDE_DIRS "src"
