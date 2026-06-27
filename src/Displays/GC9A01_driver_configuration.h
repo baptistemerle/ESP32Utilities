@@ -7,7 +7,7 @@
 struct GC9A01Driver_Configuration
 {
   spi_host_device_t spiHost;
-  uint32_t          spiFrequencyWrite;
+  uint32_t          spiSpeedHz;
   gpio_num_t        spiPinChipSelect;
   gpio_num_t        pinReset;
   gpio_num_t        pinDataCommand;

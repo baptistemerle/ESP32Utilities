@@ -24,11 +24,11 @@ public:
 private:
   const GC9A01Driver_Configuration& m_configuration;
 
-  esp_lcd_panel_io_handle_t m_ioHandle = nullptr;
+  esp_lcd_panel_io_handle_t m_ioHandle =    nullptr;
   esp_lcd_panel_handle_t    m_panelHandle = nullptr;
 
   DisplayTxDoneCallback m_txDoneCallback = nullptr;
-  void*                 m_txDoneArg = nullptr;
+  void*                 m_txDoneArg =      nullptr;
 };
 
 #endif // GC9A01_DRIVER_H

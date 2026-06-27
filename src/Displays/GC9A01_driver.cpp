@@ -31,15 +31,15 @@ GC9A01Driver::~GC9A01Driver()
 void GC9A01Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
 {
   m_txDoneCallback = callback;
-  m_txDoneArg = callbackArg;
+  m_txDoneArg =      callbackArg;
 
   esp_lcd_panel_io_spi_config_t ioConfig = {};
-  ioConfig.dc_gpio_num = m_configuration.pinDataCommand;
-  ioConfig.cs_gpio_num = m_configuration.spiPinChipSelect;
-  ioConfig.pclk_hz = m_configuration.spiFrequencyWrite;
-  ioConfig.lcd_cmd_bits = 8;
-  ioConfig.lcd_param_bits = 8;
-  ioConfig.spi_mode = 0;
+  ioConfig.dc_gpio_num =       m_configuration.pinDataCommand;
+  ioConfig.cs_gpio_num =       m_configuration.spiPinChipSelect;
+  ioConfig.pclk_hz =           m_configuration.spiSpeedHz;
+  ioConfig.lcd_cmd_bits =      8;
+  ioConfig.lcd_param_bits =    8;
+  ioConfig.spi_mode =          0;
   ioConfig.trans_queue_depth = 10;
 
   /**
@@ -62,15 +62,15 @@ void GC9A01Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
 
   gc9a01_vendor_config_t vendor_config =
   {
-    .init_cmds = gc9a01_factoryCommands,
+    .init_cmds =      gc9a01_factoryCommands,
     .init_cmds_size = sizeof(gc9a01_factoryCommands) / sizeof(gc9a01_lcd_init_cmd_t),
   };
 
   esp_lcd_panel_dev_config_t panel_config = {};
   panel_config.reset_gpio_num = m_configuration.pinReset;
-  panel_config.rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR;
+  panel_config.rgb_ele_order =  LCD_RGB_ELEMENT_ORDER_BGR;
   panel_config.bits_per_pixel = 16;
-  panel_config.vendor_config = &vendor_config;
+  panel_config.vendor_config =  &vendor_config;
 
   ESP_ERROR_CHECK(esp_lcd_new_panel_gc9a01(m_ioHandle, &panel_config, &m_panelHandle));
   ESP_ERROR_CHECK(esp_lcd_panel_reset(m_panelHandle));
