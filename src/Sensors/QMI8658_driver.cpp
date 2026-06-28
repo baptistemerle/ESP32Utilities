@@ -15,7 +15,7 @@ constexpr uint8_t regAxL =    0x35; // Start of accelerometer data
 
 constexpr uint8_t regWhoAmiExpectedValue = 0x05;
 
-constexpr uint8_t ctrl1Config = 0x60; // Auto address increment and serial configuration
+constexpr uint8_t ctrl1Config = 0x40; // Auto address increment and little endian
 constexpr uint8_t ctrl7Config = 0x01; // Accelerometer only
 
 constexpr char TAG[] = "QMI8658";
