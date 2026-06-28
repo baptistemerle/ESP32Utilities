@@ -2,7 +2,7 @@
 
 #include "Interfaces/idisplay_driver.h"
 
-#include "esp_heap_caps.h"
+#include <esp_heap_caps.h>
 
 DisplayEngine::DisplayEngine(IDisplayDriver& hardwareDriver)
   : m_hardwareDriver(hardwareDriver)

@@ -1,9 +1,8 @@
 #ifndef ST7701_DRIVER_CONFIGURATION_H
 #define ST7701_DRIVER_CONFIGURATION_H
 
-#include <esp_lcd_panel_rgb.h>
-
 #include <driver/spi_common.h>
+#include <esp_lcd_panel_rgb.h>
 #include <soc/gpio_num.h>
 
 struct ST7701Driver_Configuration

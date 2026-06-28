@@ -1,7 +1,7 @@
 #ifndef GC9A01_DRIVER_CALIBRATION_H
 #define GC9A01_DRIVER_CALIBRATION_H
 
-#include "esp_lcd_gc9a01.h"
+#include <esp_lcd_gc9a01.h>
 
 constexpr gc9a01_lcd_init_cmd_t gc9a01_factoryCommands[] =
 {

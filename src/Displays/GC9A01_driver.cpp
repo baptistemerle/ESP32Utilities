@@ -3,10 +3,10 @@
 #include "GC9A01_driver_calibration.h"
 #include "GC9A01_driver_configuration.h"
 
-#include "driver/spi_master.h"
-#include "esp_err.h"
-#include "esp_lcd_gc9a01.h"
-#include "esp_lcd_panel_ops.h"
+#include <driver/spi_master.h>
+#include <esp_err.h>
+#include <esp_lcd_gc9a01.h>
+#include <esp_lcd_panel_ops.h>
 
 GC9A01Driver::GC9A01Driver(const GC9A01Driver_Configuration& configuration)
   : m_configuration(configuration)

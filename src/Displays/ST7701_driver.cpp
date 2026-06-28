@@ -3,7 +3,7 @@
 #include "ST7701_driver_calibration.h"
 #include "ST7701_driver_configuration.h"
 
-#include "freertos/FreeRTOS.h"
+#include <freertos/FreeRTOS.h>
 
 ST7701Driver::ST7701Driver(const ST7701Driver_Configuration& configuration,
                                  PinControlCallback          setCsCallback,

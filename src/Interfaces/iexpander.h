@@ -4,7 +4,6 @@
 #include "gpio_types.h"
 
 #include <esp_err.h>
-
 #include <soc/gpio_num.h>
 
 class IExpander

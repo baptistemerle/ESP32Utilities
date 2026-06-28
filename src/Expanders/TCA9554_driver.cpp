@@ -2,8 +2,8 @@
 
 #include "TCA9554_driver_configuration.h"
 
-#include "driver/i2c_master.h"
-#include "esp_check.h"
+#include <driver/i2c_master.h>
+#include <esp_check.h>
 
 namespace
 {

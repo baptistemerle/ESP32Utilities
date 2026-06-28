@@ -4,11 +4,10 @@
 #include "Interfaces/gpio_types.h"
 #include "Interfaces/idisplay_driver.h"
 
-#include "driver/spi_master.h"
-
-#include "esp_err.h"
-#include "esp_lcd_panel_rgb.h"
-#include "esp_lcd_panel_ops.h"
+#include <driver/spi_master.h>
+#include <esp_err.h>
+#include <esp_lcd_panel_rgb.h>
+#include <esp_lcd_panel_ops.h>
 
 #include <functional>
 
