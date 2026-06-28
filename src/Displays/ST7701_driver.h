@@ -34,6 +34,7 @@ public:
 
 private:
   void initST7701SRegisters();
+  void reset();
 
   esp_err_t writeCommand9Bit(uint8_t cmd);
   esp_err_t writeData9Bit(uint8_t data);

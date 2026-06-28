@@ -117,12 +117,7 @@ void ST7701Driver::initST7701SRegisters()
 
   ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &dev_cfg, &m_spiHandle));
 
-  m_setCsCallback(GPIO::Level::High);
-
-  m_setResetCallback(GPIO::Level::Low);
-  vTaskDelay(pdMS_TO_TICKS(50));
-  m_setResetCallback(GPIO::Level::High);
-  vTaskDelay(pdMS_TO_TICKS(120));
+  reset();
 
   m_setCsCallback(GPIO::Level::Low);
   vTaskDelay(pdMS_TO_TICKS(10));
@@ -151,6 +146,14 @@ void ST7701Driver::initST7701SRegisters()
   }
 
   m_setCsCallback(GPIO::Level::High);
+}
+
+void ST7701Driver::reset()
+{
+  m_setResetCallback(GPIO::Level::Low);
+  vTaskDelay(pdMS_TO_TICKS(50));
+  m_setResetCallback(GPIO::Level::High);
+  vTaskDelay(pdMS_TO_TICKS(120));
 }
 
 esp_err_t ST7701Driver::writeCommand9Bit(uint8_t cmd)
