@@ -18,14 +18,14 @@ GC9A01Driver::~GC9A01Driver()
   if (m_panelHandle)
   {
     esp_lcd_panel_del(m_panelHandle);
+    m_panelHandle = nullptr;
   }
 
   if (m_ioHandle)
   {
     esp_lcd_panel_io_del(m_ioHandle);
+    m_ioHandle = nullptr;
   }
-
-  spi_bus_free(m_configuration.spiHost);
 }
 
 void GC9A01Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
