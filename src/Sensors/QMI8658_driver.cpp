@@ -16,7 +16,7 @@ constexpr uint8_t regAxL =    0x35; // Start of accelerometer data
 constexpr uint8_t regWhoAmiExpectedValue = 0x05;
 
 constexpr uint8_t ctrl1Config = 0x40; // Auto address increment and little endian
-constexpr uint8_t ctrl7Config = 0x01; // Accelerometer only
+constexpr uint8_t ctrl7Config = 0x81; // Sync sample and accelerometer
 
 constexpr char TAG[] = "QMI8658";
 }
