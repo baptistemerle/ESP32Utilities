@@ -14,7 +14,7 @@ idf_component_register(
            "src/Graphics"
            "src/Sensors"
   INCLUDE_DIRS "src"
-  REQUIRES lvgl esp_lcd_gc9a01 esp_lcd_st77916
+  REQUIRES lvgl esp_lcd_gc9a01 esp_lcd_st77916 nvs_flash
 )
 
 target_compile_options(${COMPONENT_LIB} PRIVATE ${COMPILER_FLAGS})
