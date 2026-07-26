@@ -18,22 +18,22 @@ inline bool extract(const cJSON* item, bool& out)
   return false;
 }
 
-inline bool extract(const cJSON* item, int& out)
+inline bool extract(const cJSON* item, uint8_t& out)
 {
   if (item && cJSON_IsNumber(item))
   {
-    out = item->valueint;
+    out = static_cast<uint8_t>(item->valueint);
     return true;
   }
 
   return false;
 }
 
-inline bool extract(const cJSON* item, uint8_t& out)
+inline bool extract(const cJSON* item, int8_t& out)
 {
   if (item && cJSON_IsNumber(item))
   {
-    out = static_cast<uint8_t>(item->valueint);
+    out = static_cast<int8_t>(item->valueint);
     return true;
   }
 
@@ -51,11 +51,33 @@ inline bool extract(const cJSON* item, uint16_t& out)
   return false;
 }
 
+inline bool extract(const cJSON* item, int16_t& out)
+{
+  if (item && cJSON_IsNumber(item))
+  {
+    out = static_cast<int16_t>(item->valueint);
+    return true;
+  }
+
+  return false;
+}
+
 inline bool extract(const cJSON* item, uint32_t& out)
 {
   if (item && cJSON_IsNumber(item))
   {
     out = static_cast<uint32_t>(item->valueint);
+    return true;
+  }
+
+  return false;
+}
+
+inline bool extract(const cJSON* item, int32_t& out)
+{
+  if (item && cJSON_IsNumber(item))
+  {
+    out = static_cast<int32_t>(item->valueint);
     return true;
   }
 
