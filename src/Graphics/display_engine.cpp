@@ -55,7 +55,7 @@ lv_display_t* DisplayEngine::init()
 
   if (m_hardwareDriver.preferredRenderMode() == DisplayRenderMode::Partial)
   {
-    uint32_t bufferSize = m_hardwareDriver.width() * (m_hardwareDriver.height() / 10) * sizeof(uint16_t);
+    uint32_t bufferSize = m_hardwareDriver.width() * (m_hardwareDriver.height() / 4) * sizeof(uint16_t);
 
     m_buffer1 = heap_caps_malloc(bufferSize, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
     m_buffer2 = heap_caps_malloc(bufferSize, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
