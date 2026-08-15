@@ -29,12 +29,6 @@ DisplayEngine::~DisplayEngine()
 
 lv_display_t* DisplayEngine::init()
 {
-  m_dmaSemaphore = xSemaphoreCreateBinary();
-  if (!m_dmaSemaphore)
-    return nullptr;
-
-  xSemaphoreGive(m_dmaSemaphore);
-
   m_hardwareDriver.init(&DisplayEngine::onDriverTXDone, this);
 
   m_lvglDisplay = lv_display_create(m_hardwareDriver.width(), m_hardwareDriver.height());
@@ -77,12 +71,21 @@ lv_display_t* DisplayEngine::init()
 void DisplayEngine::flushCallback(lv_display_t* display, const lv_area_t* area, uint8_t* colorData)
 {
   DisplayEngine* instance = static_cast<DisplayEngine*>(lv_display_get_user_data(display));
+  instance->m_pendingDisplay = display;
 
-  xSemaphoreTake(instance->m_dmaSemaphore, portMAX_DELAY);
+  if (instance->m_hardwareDriver.preferredRenderMode() == DisplayRenderMode::Direct)
+  {
+    if (lv_display_flush_is_last(display))
+    {
+      instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
+    }
 
-  instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
-
-  lv_display_flush_ready(display);
+    lv_display_flush_ready(display);
+  }
+  else
+  {
+    instance->m_hardwareDriver.flush(area->x1, area->y1, area->x2, area->y2, colorData);
+  }
 }
 
 /**
@@ -93,15 +96,10 @@ void DisplayEngine::flushCallback(lv_display_t* display, const lv_area_t* area, 
 void DisplayEngine::onDriverTXDone(void* arg)
 {
   auto* instance = static_cast<DisplayEngine*>(arg);
-  if (instance && instance->m_dmaSemaphore)
+
+  if (instance && instance->m_pendingDisplay)
   {
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-    xSemaphoreGiveFromISR(instance->m_dmaSemaphore, &xHigherPriorityTaskWoken);
-
-    if (xHigherPriorityTaskWoken)
-    {
-      portYIELD_FROM_ISR();
-    }
+    lv_display_flush_ready((lv_display_t*)instance->m_pendingDisplay);
+    instance->m_pendingDisplay = nullptr;
   }
 }

@@ -5,6 +5,8 @@
 
 #include <freertos/FreeRTOS.h>
 
+#include <string.h>
+
 ST7701Driver::ST7701Driver(const ST7701Driver_Configuration& configuration,
                                  PinControlCallback          setCsCallback,
                                  PinControlCallback          setResetCallback)
@@ -31,9 +33,6 @@ ST7701Driver::~ST7701Driver()
 
 void ST7701Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
 {
-  m_txDoneCallback = callback;
-  m_txDoneCallbackArg = callbackArg;
-
   initST7701SRegisters();
 
   esp_lcd_rgb_panel_config_t panel_config = {};
@@ -52,7 +51,7 @@ void ST7701Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
 
   panel_config.num_fbs =               2;
   panel_config.flags.fb_in_psram =     true;
-  panel_config.bounce_buffer_size_px = m_configuration.screenWidth * 15;
+  panel_config.bounce_buffer_size_px = m_configuration.screenWidth * 60;
 
   ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&panel_config, &m_panelHandle));
   ESP_ERROR_CHECK(esp_lcd_panel_reset(m_panelHandle));
@@ -60,15 +59,20 @@ void ST7701Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
 
   ESP_ERROR_CHECK(esp_lcd_rgb_panel_get_frame_buffer(m_panelHandle, 2, &m_framebuffers[0], &m_framebuffers[1]));
 
+  memset(m_framebuffers[0], 0x00, m_configuration.screenWidth * m_configuration.screenHeight * sizeof(uint16_t));
+  memset(m_framebuffers[1], 0x00, m_configuration.screenWidth * m_configuration.screenHeight * sizeof(uint16_t));
+
   esp_lcd_rgb_panel_event_callbacks_t cbs = {};
   cbs.on_vsync = [](esp_lcd_panel_handle_t panel, const esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx) -> bool
   {
     auto* driver = static_cast<ST7701Driver*>(user_ctx);
-    if (driver->m_txDoneCallback)
+    BaseType_t high_task_awoken = pdFALSE;
+
+    if (driver->m_flushTaskHandle != nullptr)
     {
-      driver->m_txDoneCallback(driver->m_txDoneCallbackArg);
+      vTaskNotifyGiveFromISR(driver->m_flushTaskHandle, &high_task_awoken);
     }
-    return false;
+    return high_task_awoken == pdTRUE;
   };
 
   ESP_ERROR_CHECK(esp_lcd_rgb_panel_register_event_callbacks(m_panelHandle, &cbs, this));
@@ -76,7 +80,14 @@ void ST7701Driver::init(DisplayTxDoneCallback callback, void* callbackArg)
 
 void ST7701Driver::flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2, const void* rawBuffer)
 {
-  esp_lcd_panel_draw_bitmap(m_panelHandle, x1, y1, x2 + 1, y2 + 1, rawBuffer);
+  m_flushTaskHandle = xTaskGetCurrentTaskHandle();
+  ulTaskNotifyValueClear(NULL, ULONG_MAX);
+
+  esp_lcd_panel_draw_bitmap(m_panelHandle, 0, 0, m_configuration.screenWidth, m_configuration.screenHeight, rawBuffer);
+
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+  m_flushTaskHandle = nullptr;
 }
 
 uint32_t ST7701Driver::width() const

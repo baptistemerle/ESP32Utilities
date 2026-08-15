@@ -9,6 +9,8 @@
 #include <esp_lcd_panel_rgb.h>
 #include <esp_lcd_panel_ops.h>
 
+#include <freertos/FreeRTOS.h>
+
 #include <functional>
 
 class ST7701Driver_Configuration;
@@ -48,10 +50,9 @@ private:
   esp_lcd_panel_handle_t m_panelHandle = nullptr;
   void*                  m_framebuffers[2] { nullptr, nullptr };
 
-  DisplayTxDoneCallback m_txDoneCallback =    nullptr;
-  void*                 m_txDoneCallbackArg = nullptr;
-
   spi_device_handle_t m_spiHandle = nullptr;
+
+  TaskHandle_t m_flushTaskHandle = nullptr;
 };
 
 #endif // ST7701_DRIVER_H
