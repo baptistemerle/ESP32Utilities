@@ -1,8 +1,11 @@
-#include "display_engine.h"
-
-#include "Interfaces/idisplay_driver.h"
+#include "ESP32Utilities/Graphics/display_engine.h"
 
 #include <esp_heap_caps.h>
+
+#include "ESP32Utilities/Displays/idisplay_driver.h"
+
+namespace esp32utilities::graphics
+{
 
 DisplayEngine::DisplayEngine(IDisplayDriver& hardwareDriver)
   : m_hardwareDriver(hardwareDriver)
@@ -29,6 +32,8 @@ DisplayEngine::~DisplayEngine()
 
 lv_display_t* DisplayEngine::init()
 {
+  using DisplayRenderMode = esp32utilities::displays::DisplayRenderMode;
+
   m_hardwareDriver.init(&DisplayEngine::onDriverTXDone, this);
 
   m_lvglDisplay = lv_display_create(m_hardwareDriver.width(), m_hardwareDriver.height());
@@ -70,6 +75,8 @@ lv_display_t* DisplayEngine::init()
 
 void DisplayEngine::flushCallback(lv_display_t* display, const lv_area_t* area, uint8_t* colorData)
 {
+  using DisplayRenderMode = esp32utilities::displays::DisplayRenderMode;
+
   DisplayEngine* instance = static_cast<DisplayEngine*>(lv_display_get_user_data(display));
   instance->m_pendingDisplay = display;
 
@@ -103,3 +110,5 @@ void DisplayEngine::onDriverTXDone(void* arg)
     instance->m_pendingDisplay = nullptr;
   }
 }
+
+} // namespace esp32utilities::graphics

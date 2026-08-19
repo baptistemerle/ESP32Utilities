@@ -10,18 +10,18 @@ set(COMPILER_FLAGS
 
 idf_component_register(
   SRCS
-    "src/Displays/GC9A01_driver.cpp"
-    "src/Displays/ST7701_driver.cpp"
-    "src/Displays/ST77916_driver.cpp"
+    "src/Displays/GC9A01/driver.cpp"
+    "src/Displays/ST7701/driver.cpp"
+    "src/Displays/ST77916/driver.cpp"
 
-    "src/Expanders/TCA9554_driver.cpp"
+    "src/Expanders/TCA9554/driver.cpp"
 
     "src/Graphics/display_engine.cpp"
 
-    "src/Sensors/QMI8658_driver.cpp"
+    "src/Sensors/QMI8658/driver.cpp"
 
   INCLUDE_DIRS
-    "src"
+    "include"
 
   REQUIRES lvgl esp_lcd_gc9a01 esp_lcd_st77916 nvs_flash cjson
 )
