@@ -18,7 +18,9 @@ idf_component_register(
 
     "src/Graphics/display_engine.cpp"
 
-    "src/SDCard/driver.cpp"
+    "src/SDCard/file_system.cpp"
+    "src/SDCard/transaction.cpp"
+    "src/SDCard/volume.cpp"
 
     "src/Sensors/QMI8658/driver.cpp"
 
