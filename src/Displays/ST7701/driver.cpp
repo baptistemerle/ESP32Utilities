@@ -126,7 +126,7 @@ void Driver::initST7701SRegisters()
   dev_cfg.address_bits =   8;
   dev_cfg.dummy_bits =     0;
 
-  ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &dev_cfg, &m_spiHandle));
+  ESP_ERROR_CHECK(spi_bus_add_device(m_configuration.spiHost, &dev_cfg, &m_spiHandle));
 
   reset();
 
