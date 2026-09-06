@@ -18,12 +18,14 @@ idf_component_register(
 
     "src/Graphics/display_engine.cpp"
 
+    "src/SDCard/driver.cpp"
+
     "src/Sensors/QMI8658/driver.cpp"
 
   INCLUDE_DIRS
     "include"
 
-  REQUIRES lvgl esp_lcd_gc9a01 esp_lcd_st77916 nvs_flash cjson
+  REQUIRES lvgl esp_lcd_gc9a01 esp_lcd_st77916 nvs_flash cjson fatfs sdmmc driver vfs
 )
 
 target_compile_options(${COMPONENT_LIB} PRIVATE ${COMPILER_FLAGS})
